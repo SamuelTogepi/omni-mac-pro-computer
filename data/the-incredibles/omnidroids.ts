@@ -1,23 +1,58 @@
 import { Entity } from '@/types'
 
-export const theIncrediblesOmnidroids: Array<Entity> = [
-  { slug: 'X1', name: 'Omnidroid v.X1', description: 'Threaded locomotion, sensory display, bi-articulated grappling claws', img: 'x1.png' },
+export const omniMacPrototypes: Array<Entity> = [
   {
-    slug: 'X2',
-    name: 'Omnidroid v.X2',
-    description: 'Bipedal locomotion, omni-directional sensory array, bi-articulated grappling claws',
-    img: 'x2.png',
+    slug: '128k',
+    name: 'Omni-Mac 128K',
+    description: 'Motorola 68000 CISC threat matrix, single-drive thermal tracking, compact CRT visual sensor, treaded locomotion.',
+    img: 'omnimac-128k.png',
   },
   {
-    slug: 'X3',
-    name: 'Omnidroid v.X3',
-    description: 'Suspended tri-pedal locomotion, grappling-claws, uni-directional sensory array',
-    img: 'x3.png',
+    slug: 'iifx',
+    name: 'Omni-Mac IIfx',
+    description: '40MHz overclocked combat processor, dual dedicated I/O reflex controllers, NuBus reinforced grappling armature.',
+    img: 'omnimac-iifx.png',
   },
-  { slug: 'X4', name: 'Omnidroid v.X4', description: 'Quadra-pedal locomotion, grappling-claws, quadra-directional sensory array', img: 'x4.png' },
-  { slug: 'X5', name: 'Omnidroid v.X5', description: 'Quadra-pedal locomotion, omni articulated grappling-claws', img: 'x5.png' },
-  { slug: 'X6', name: 'Omnidroid v.X6', description: 'Quadra-pedal locomotion, omni articulated grappling-claws', img: 'x6.png' },
-  { slug: 'X7', name: 'Omnidroid v.X7', description: 'Penta-pedal locomotion, trans universal articulation, sensor cluster', img: 'x7.png' },
-  { slug: 'X8', name: 'Omnidroid v.X8', description: 'Omni-directional, trans universal articulation, bi-polar sensor clusters', img: 'x8.png' },
-  { slug: 'X9', name: 'Omnidroid v.X9', description: 'Omni-directional, trans-universal articulation, bi-polar sensor cluster', img: 'x9.png' },
+  {
+    slug: 'color-classic',
+    name: 'Omni-Mac Color Classic',
+    description: 'Integrated multispectral 256-color targeting HUD, compact bipedal chassis, expansion-bay energy dampener.',
+    img: 'omnimac-color-classic.png',
+  },
+  {
+    slug: 'performa-5260cd',
+    name: 'Omni-Mac Performa 5260CD',
+    description: 'PowerPC 603e multi-threat processing unit, high-density optical disc data-slates, all-in-one reinforced plating.',
+    img: 'omnimac-performa-5260cd.png',
+  },
+  {
+    slug: 'tam',
+    name: 'Omni-Mac TAM (20th Anniversary)',
+    description: 'Acoustically tuned Bose sonic-resonance disruptors, ultra-slim vertical housing, custom flat-panel spatial tracker.',
+    img: 'omnimac-tam.png',
+  },
+  {
+    slug: 'g3',
+    name: 'Omni-Mac G3',
+    description: 'Bondi-blue polycarbonate armor shell, Copper PowerPC 750 sub-routine engine, integrated handle for high-G aerial combat.',
+    img: 'omnimac-g3.png',
+  },
+  {
+    slug: 'g5',
+    name: 'Omni-Mac G5',
+    description: '64-bit dual-core processor arrays, active liquid cooling system, anodized aluminum cheese-grater ballistics mesh.',
+    img: 'omnimac-g5.png',
+  },
+  {
+    slug: 'mp-2009',
+    name: 'Omni-Mac Pro (Nehalem 2009)',
+    description: 'Dual Intel Xeon multi-threading combat core, tool-less modular component hot-swapping, high-torque hydraulic limbs.',
+    img: 'omnimac-mp-2009.png',
+  },
+  {
+    slug: 'mp-2013',
+    name: 'Omni-Mac Pro (Cylinder 2013)',
+    description: 'Unified thermal core, dual-workstation GPUs for predictive omni-directional evasive maneuvers, compact radial defense cylinder.',
+    img: 'omnimac-mp-2013.png',
+  },
 ]
