@@ -12,7 +12,7 @@ export const omniMacEncounters: Array<Encounter> = [
   { entityA_slug: 'spider-man', entityB_slug: 'color-classic', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'bakugo', entityB_slug: 'color-classic', entityA_defeated: false, entityB_defeated: true },
   { entityA_slug: 'bakugo', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
-  { entityA_slug: 'graviton', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
+  { entityA_slug: 'ochaco', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'the-flash', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'storm', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'magneto', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
