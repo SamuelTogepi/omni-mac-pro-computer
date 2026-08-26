@@ -152,7 +152,7 @@ export const theIncrediblesSupersResult: Array<EntityResult> = [
     name: 'Mega Man Fragments (Spinz & Teo)',
     slug: 'megaman-fragments',
     img: 'spinz.png',
-    img: 'teo.png',
+    secondaryImg: 'teo.png',
     description:
       'Dual-unit operative strike team. Spinz wields the Biometal Model X fragment with the specialized X-Buster for heavy long-range charged energy projection; Teo wields the Biometal Model Z fragment with the energy-cutting Z-Saber for high-speed close-quarters melee combat.',
     lastActiveRecord: '17.12.56',
