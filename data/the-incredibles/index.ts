@@ -3,7 +3,7 @@ import { theIncrediblesSupers, theIncrediblesSupersResult } from './supers'
 import { theIncrediblesOmnidroids } from './omnidroids'
 
 export * from './encounters'
-export * from './omnidroids'
+export * from './omnimacs'
 export * from './supers'
 
 export const theIncrediblesCharacters: Array<Entity> = [...theIncrediblesSupers, ...theIncrediblesOmnidroids]
