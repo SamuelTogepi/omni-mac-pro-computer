@@ -19,7 +19,7 @@ export const omniMacEncounters: Array<Encounter> = [
   { entityA_slug: 'captain-america', entityB_slug: 'performa-5260cd', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'homelander', entityB_slug: 'performa-5260cd', entityA_defeated: false, entityB_defeated: true },
   { entityA_slug: 'homelander', entityB_slug: 'tam', entityA_defeated: true, entityB_defeated: false },
-  { entityA_slug: 'raiden', entityB_slug: 'tam', entityA_defeated: true, entityB_defeated: false },
+  { entityA_slug: 'static-shock', entityB_slug: 'tam', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'starbeam', entityB_slug: 'tam', entityA_defeated: false, entityB_defeated: true },
   { entityA_slug: 'starbeam', entityB_slug: 'g3', entityA_defeated: true, entityB_defeated: false },
   { entityA_slug: 'aquaman', entityB_slug: 'g3', entityA_defeated: true, entityB_defeated: false },
