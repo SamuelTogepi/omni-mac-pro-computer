@@ -1,15 +1,46 @@
-import { useControlsStore } from '@/store/controls'
-import { Box, Link, Text, HStack } from '@chakra-ui/react'
+import React from 'react'
+import { Link, Text, HStack, LinkProps, keyframes } from '@chakra-ui/react'
 import { SquareCode } from 'lucide-react'
-import { FC } from 'react'
+import { useControlsStore } from '@/store/controls'
 
-const CreatorHint: FC = () => {
+// Native Chakra keyframes (eliminates raw <style> tags and SSR style injection issues)
+const pulseColor = keyframes`
+  0% { color: white; }
+  50% { color: var(--chakra-colors-teal-200, #81E6D9); }
+  100% { color: white; }
+`
+
+export interface CreatorHintProps extends LinkProps {
+  /**
+   * Creator contact email address.
+   * @default "samuelbusinessbowers@gmail.com"
+   */
+  email?: string
+  /**
+   * Creator display name.
+   * @default "Samuel Charlie Bowers"
+   */
+  creatorName?: string
+}
+
+/**
+ * @name CreatorHint
+ *
+ * @description
+ * A fixed hint badge anchored at the top-right of the viewport linking to
+ * the creator's contact email, featuring a subtle pulsing text animation.
+ */
+const CreatorHint: React.FC<CreatorHintProps> = ({
+  email = 'samuelbusinessbowers@gmail.com',
+  creatorName = 'Samuel Charlie Bowers',
+  ...props
+}) => {
   const { enableControls } = useControlsStore()
 
   return (
-    <Box
+    <Link
       position="fixed"
-      top={enableControls ? '0.5rem' : -100}
+      top={enableControls ? '0.5rem' : '-100px'}
       right="0.5rem"
       zIndex="overlay"
       bg="gray.700"
@@ -18,42 +49,35 @@ const CreatorHint: FC = () => {
       py="1"
       borderRadius="md"
       fontSize="sm"
-      opacity={0.8}
       boxShadow="md"
       fontFamily="sans-serif"
-      as={Link}
-      /* @ts-expect-error Usual chakra stuff */
-      href="https://www.linkedin.com/in/giuseppe-del-campo/"
-      target="_blank"
+      href={`mailto:${email}`}
       textDecoration="none"
-      _hover={{ textDecoration: 'underline', color: 'teal.200' }}
+      opacity={enableControls ? 0.8 : 0}
+      pointerEvents={enableControls ? 'auto' : 'none'}
+      aria-hidden={!enableControls}
+      transition="top 0.3s ease-in-out, opacity 0.3s ease-in-out, color 0.2s ease"
+      _hover={{
+        textDecoration: 'none',
+        opacity: 1,
+        color: 'teal.200',
+      }}
+      {...props}
     >
       <HStack gap={2}>
         <SquareCode size={16} />
-        <Text>
+        <Text as="span">
           Created by{' '}
           <Text
             as="span"
             fontWeight={700}
-            style={{
-              animation: 'pulseColor 2s ease-in-out infinite',
-            }}
+            animation={`${pulseColor} 2s ease-in-out infinite`}
           >
-            Giuseppe Del Campo
+            {creatorName}
           </Text>
         </Text>
       </HStack>
-
-      <style>
-        {`
-            @keyframes pulseColor {
-                0% { color: white; }
-                50% { color: teal; }
-                100% { color: white; }
-            }
-        `}
-      </style>
-    </Box>
+    </Link>
   )
 }
 
