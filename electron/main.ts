@@ -7,6 +7,27 @@ import next from 'next'
 
 const __filename = fileURLToPath(import.meta.url)
 
+// ---------------------------------------------------------------------------
+// 1. Single Instance Lock (Prevents running two conflicting Next.js servers)
+// ---------------------------------------------------------------------------
+let mainWindow: BrowserWindow | null = null
+const gotSingleInstanceLock = app.requestSingleInstanceLock()
+
+if (!gotSingleInstanceLock) {
+  app.quit()
+  process.exit(0)
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+}
+
+// ---------------------------------------------------------------------------
+// 2. Safe Logging Utility
+// ---------------------------------------------------------------------------
 const safeLog = (msg: string) => {
   try {
     const userData = app && typeof app.getPath === 'function' ? app.getPath('userData') : null
@@ -14,7 +35,7 @@ const safeLog = (msg: string) => {
       const logPath = path.join(userData, 'desktop-debug.log')
       fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${msg}\n`, { encoding: 'utf8' })
     }
-  } catch (e) {
+  } catch {
     // ignore write errors
   }
   try {
@@ -22,19 +43,17 @@ const safeLog = (msg: string) => {
   } catch {}
 }
 
-// Resolve project dir
+// ---------------------------------------------------------------------------
+// 3. Project Directory Resolution
+// ---------------------------------------------------------------------------
 const __projectDir = (() => {
   try {
-    // If app is packaged, resourcesPath points to resources (app.asar or app)
     if (app && app.isPackaged) {
-      // process.resourcesPath gives path to resources (e.g. C:\...\resources)
-      // app files are under resources/app or resources/app.asar.unpacked
       const resources = process.resourcesPath
-      // possible locations to check
       const candidates = [
-        path.join(resources, 'app'), // common when unpacked
-        path.join(resources, 'app.asar.unpacked'), // unpacked ASAR
-        path.join(resources, 'app.asar'), // fallback (ASAR file)
+        path.join(resources, 'app'),
+        path.join(resources, 'app.asar.unpacked'),
+        path.join(resources, 'app.asar'),
       ]
       for (const c of candidates) {
         try {
@@ -43,11 +62,9 @@ const __projectDir = (() => {
           }
         } catch {}
       }
-      // fallback: resourcesPath (may still work if .next was unpacked at resources)
       return resources
     }
 
-    // Not packaged: walk up from current file looking for .next or package.json
     let dir = path.dirname(__filename)
     for (let i = 0; i < 6; i++) {
       try {
@@ -59,7 +76,6 @@ const __projectDir = (() => {
       if (parent === dir) break
       dir = parent
     }
-    // fallback to repo root relative to file
     return path.resolve(path.dirname(__filename), '..')
   } catch (err) {
     try {
@@ -73,79 +89,133 @@ safeLog(`Resolved __projectDir=${__projectDir}`)
 safeLog(`process.resourcesPath=${process.resourcesPath}`)
 safeLog(`app.isPackaged=${app && app.isPackaged}`)
 
-// Determine dev mode: only true when explicitly in development
+// ---------------------------------------------------------------------------
+// 4. Server Configuration
+// ---------------------------------------------------------------------------
 const dev = (process.env.ELECTRON_DEV === '1' || process.env.NODE_ENV === 'development') && !app.isPackaged
-
-safeLog(`Running next in dev=${dev} NODE_ENV=${process.env.NODE_ENV}`)
-
+const HOSTNAME = '127.0.0.1' // Explicitly bind to localhost (Security: prevents exposing port over local network)
 const PORT = parseInt(process.env.PORT ?? '3000', 10)
 let server: http.Server | null = null
 
+safeLog(`Running next in dev=${dev} NODE_ENV=${process.env.NODE_ENV}`)
+
 async function startNext(): Promise<void> {
-  // next expects the project root containing package.json and .next
   const dir = __projectDir
   safeLog(`Starting Next with dir=${dir}`)
-  const nextApp = next({ dev, dir })
+
+  const nextApp = next({ dev, dir, hostname: HOSTNAME, port: PORT })
   await nextApp.prepare()
   const handle = nextApp.getRequestHandler()
 
   server = http.createServer((req, res) => handle(req, res))
+
   await new Promise<void>((resolve, reject) => {
-    server!.listen(PORT, (err?: Error) => (err ? reject(err) : resolve()))
+    // Explicitly bind to 127.0.0.1 for security
+    server!.listen(PORT, HOSTNAME, (err?: Error) => (err ? reject(err) : resolve()))
   })
-  safeLog(`Next server listening on http://localhost:${PORT} (dev=${dev})`)
+
+  safeLog(`Next server listening on http://${HOSTNAME}:${PORT} (dev=${dev})`)
 }
 
-function createWindow(): void {
+function stopServer(): Promise<void> {
+  return new Promise((resolve) => {
+    if (server) {
+      server.close(() => {
+        server = null
+        resolve()
+      })
+    } else {
+      resolve()
+    }
+  })
+}
+
+// ---------------------------------------------------------------------------
+// 5. Window Management
+// ---------------------------------------------------------------------------
+function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    backgroundColor: '#000000', // Eliminates white flash on launch (matches dark terminal UI)
+    show: false,                // Hidden until ready to show
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: true,
     },
   })
-  win.loadURL(`http://localhost:${PORT}`)
+
+  // Prevent white flash by showing window only after initial HTML is parsed
+  win.once('ready-to-show', () => {
+    win.show()
+  })
+
+  win.on('closed', () => {
+    if (mainWindow === win) {
+      mainWindow = null
+    }
+  })
+
+  win.loadURL(`http://${HOSTNAME}:${PORT}`)
+  return win
 }
 
+// ---------------------------------------------------------------------------
+// 6. Application Lifecycle
+// ---------------------------------------------------------------------------
 app.whenReady().then(async () => {
   try {
     await startNext()
-    createWindow()
+    mainWindow = createWindow()
+
+    // macOS activate support (re-create window if clicked in Dock with no windows open)
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        mainWindow = createWindow()
+      }
+    })
   } catch (err) {
     safeLog('Failed to start Next: ' + String(err))
     try {
-      // Additional detailed log in userData
       const userData = app.getPath('userData')
       const logPath = path.join(userData, 'electron-error.log')
-      fs.appendFileSync(logPath, `[${new Date().toISOString()}] Failed to start Next:\n${String(err)}\n\n`, { encoding: 'utf8', flag: 'a' })
+      fs.appendFileSync(
+        logPath,
+        `[${new Date().toISOString()}] Failed to start Next:\n${String(err)}\n\n`,
+        { encoding: 'utf8', flag: 'a' }
+      )
     } catch (logErr) {
       safeLog('Failed to write error log: ' + String(logErr))
     }
-    try {
-      app.quit()
-    } catch {}
+    app.quit()
   }
 })
 
 app.on('window-all-closed', () => {
-  if (server) {
-    server.close()
-    server = null
-  }
-  if (process.platform !== 'darwin') app.quit()
-})
-
-app.on('before-quit', () => {
-  if (server) {
-    server.close()
-    server = null
-  }
-})
-
-process.on('SIGINT', () => {
-  if (server) server.close()
-  try {
+  // On macOS, apps usually stay open in Dock until Command+Q; on Windows/Linux, quit immediately
+  if (process.platform !== 'darwin') {
     app.quit()
-  } catch {}
+  }
+})
+
+app.on('before-quit', async (e) => {
+  if (server) {
+    e.preventDefault()
+    await stopServer()
+    app.exit(0)
+  }
+})
+
+// Clean shutdown on OS kill signals
+process.on('SIGINT', async () => {
+  await stopServer()
+  app.quit()
+})
+
+process.on('SIGTERM', async () => {
+  await stopServer()
+  app.quit()
 })
