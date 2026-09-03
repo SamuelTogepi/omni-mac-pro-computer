@@ -1,9 +1,14 @@
-import { motion } from 'framer-motion'
-import { Image } from '@chakra-ui/react'
+import React from 'react'
+import { ImageProps, chakra, shouldForwardProp } from '@chakra-ui/react'
+import { motion, isValidMotionProp } from 'framer-motion'
 
-const MotionImage = motion(Image)
+// Consistent Chakra UI + Framer Motion wrapper that prevents type conflicts with `transition`
+const MotionImage = chakra(motion.img, {
+  shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
+})
 
-interface AnimatedImageProps {
+export interface AnimatedImageProps
+  extends Omit<ImageProps, 'transition' | 'initial' | 'animate'> {
   /**
    * Source URL of the image.
    */
@@ -16,25 +21,31 @@ interface AnimatedImageProps {
   alt: string
 
   /**
-   * Optional width of the image in pixels.
+   * Optional width of the image (accepts numbers in px or CSS strings like "100%").
    */
-  width?: number
+  width?: string | number
 
   /**
-   * Optional height of the image in pixels.
+   * Optional height of the image (accepts numbers in px or CSS strings like "auto").
    */
-  height?: number
+  height?: string | number
+
+  /**
+   * Duration of the invert filter animation in seconds.
+   * @default 0.5
+   */
+  duration?: number
 }
 
 /**
  * @name AnimatedImage
  *
  * @description
- * A wrapper around Chakra UI's `Image` component that uses Framer Motion
+ * A wrapper around an image component that uses Framer Motion and Chakra UI
  * to animate a smooth invert filter transition effect.
  *
- * On initial render, the image is fully inverted (100%),
- * and then animates to normal colors (0%) over 0.5 seconds.
+ * On initial render (and when `src` changes), the image starts fully inverted (100%),
+ * and then smoothly transitions to normal colors (0%) over the specified duration.
  *
  * @example
  * ```tsx
@@ -43,23 +54,33 @@ interface AnimatedImageProps {
  *   alt="Hero image"
  *   width={300}
  *   height={200}
+ *   objectFit="cover"
+ *   borderRadius="md"
  * />
  * ```
  *
  * @author
  * Giuseppe Del Campo
  */
-const AnimatedImage: React.FC<AnimatedImageProps> = ({ src, alt, width, height }) => {
+const AnimatedImage: React.FC<AnimatedImageProps> = ({
+  src,
+  alt,
+  width,
+  height,
+  duration = 0.5,
+  ...props
+}) => {
   return (
     <MotionImage
-      key={src + alt}
+      key={`${src}-${alt}`}
       src={src}
       alt={alt}
       width={width}
       height={height}
       initial={{ filter: 'invert(100%)' }}
       animate={{ filter: 'invert(0%)' }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      transition={{ duration, ease: 'easeOut' }}
+      {...props}
     />
   )
 }
