@@ -1,10 +1,16 @@
-import { createIcon, Box } from '@chakra-ui/react'
+import { createIcon, Box, BoxProps } from '@chakra-ui/react'
 import { RotateCcw, Smartphone } from 'lucide-react'
 
 export const MountainIcon = createIcon({
   displayName: 'MountainIcon',
   viewBox: '0 0 800 600',
-  path: <path d="m7,595.94245l783,1.05755l-194,-425.13668l-87,118.44604l-148,-281.30935l-354,586.94244z" fill="currentColor" stroke="currentColor" />,
+  path: (
+    <path
+      d="m7,595.94245l783,1.05755l-194,-425.13668l-87,118.44604l-148,-281.30935l-354,586.94244z"
+      fill="currentColor"
+      stroke="currentColor"
+    />
+  ),
 })
 
 export const DollarIcon = createIcon({
@@ -82,9 +88,7 @@ export const SuperIcon = createIcon({
   viewBox: '0 0 800 600',
   path: (
     <>
-      {/* ellipse (testa) */}
       <ellipse cx="399" cy="80.5" rx="71.5" ry="65.5" fill="currentColor" stroke="currentColor" strokeWidth="30" />
-      {/* triangolo principale */}
       <path
         d="m201.25552,165.00714l397.99064,0l-194.92033,423.0059l-203.07031,-423.0059z"
         fill="currentColor"
@@ -92,7 +96,6 @@ export const SuperIcon = createIcon({
         strokeWidth="10"
         transform="rotate(-0.0679465 400.251 376.51)"
       />
-      {/* braccio sinistro (ripetuto 2 volte nel file) */}
       <path
         d="m-386.783,366.11448l327.59137,0l-160.44151,183.1674l-167.14986,-183.1674z"
         fill="currentColor"
@@ -100,14 +103,6 @@ export const SuperIcon = createIcon({
         strokeWidth="10"
         transform="rotate(49.3432 -222.987 457.698)"
       />
-      <path
-        d="m-386.783,366.11448l327.59137,0l-160.44151,183.1674l-167.14986,-183.1674z"
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="10"
-        transform="rotate(49.3432 -222.987 457.698)"
-      />
-      {/* braccio destro */}
       <path
         d="m112.72107,243.60972l236.4578,0l-115.80783,118.90727l-120.64997,-118.90727z"
         fill="currentColor"
@@ -144,9 +139,9 @@ export const SearchIcon = createIcon({
   ),
 })
 
-export const RotateSmartphoneIcon = () => {
+export const RotateSmartphoneIcon = (props: BoxProps) => {
   return (
-    <Box position="relative" w="40px" h="40px">
+    <Box position="relative" w="40px" h="40px" {...props}>
       <Smartphone size={32} strokeWidth={2} />
       <Box position="absolute" right={-2} top={-2}>
         <RotateCcw size={18} strokeWidth={2} />
