@@ -24,7 +24,7 @@ const CountdownPage = () => {
   const styles = useSlotRecipe({ key: 'countdownPage' })({}) as Record<string, BoxProps & StackProps>
 
   const title = `Countdown to Activation | Syndrome Main Computer`
-  const description = `The final countdown to the activation of Kronos Project. Monitor the launch sequence in real time and prepare for project deploy.`
+  const description = `The final countdown to the activation of Togepi Project. Monitor the launch sequence in real time and prepare for project deploy.`
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -79,7 +79,7 @@ const CountdownPage = () => {
         <Text {...styles.title}>Until Launch</Text>
       </MotionVStack>
 
-      <ControlsHint showNavButtons showControlsHint label={'This is the countdown for Project Kronos. If you are Mr. Incredible.. you better run.'} />
+      <ControlsHint showNavButtons showControlsHint label={'This is the countdown for Project Togepi. If you are Mega Man Model ZX. You will be dead.'} />
     </>
   )
 }
